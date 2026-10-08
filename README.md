@@ -1,15 +1,32 @@
-# BenConnect Video Studio
+# BenConnect Video Studio 🎬
 
-Webbasiertes KI-Video-Studio mit Python-Backend, Replicate-Anbindung, Timeline und FFmpeg-Export.
+Ein webbasiertes Video Studio mit Replicate-Text-zu-Video-Anbindung, Clip-Bibliothek, einfacher Timeline und MP4-Export mit FFmpeg.
 
-## Projektdateien
+## Start
 
-Das vollständige Quellcode-Paket liegt derzeit als `benconnect-video-studio-full.zip` im Chat vor und muss noch in dieses Repository übernommen werden. **Dieses Repository enthält bislang nicht die ausführbare Anwendung.**
+1. Kopiere `.env.example` nach `.env`.
+2. Setze `ADMIN_PASSWORD` und einen langen zufälligen `SESSION_SECRET`.
+3. Setze `REPLICATE_API_TOKEN` und `REPLICATE_MODEL` (z. B. `owner/model`). Prüfe die zum Modell passenden Parameter in `REPLICATE_INPUT_JSON`.
+4. Starte `docker compose up -d --build`.
+5. Lokal läuft die App hinter `127.0.0.1:8000`; für `video.benconnect.cyou` einen HTTPS-Reverse-Proxy und DNS einrichten.
 
-## Geplante Bereitstellung
+Für lokale Tests ohne HTTPS kann `COOKIE_SECURE=false` verwendet werden; in Produktion muss es `true` bleiben.
 
-Ziel-Domain: `video.benconnect.cyou`.
+## Funktionen
 
-Vor dem Start: `.env.example` als `.env` kopieren und sichere Zugangsdaten sowie Replicate-API-Token konfigurieren. Niemals `.env` oder geheime Schlüssel committen.
+- Passwortgeschützter Zugang und serverseitiger API-Schlüssel
+- Replicate-Videoerstellung mit Statusabfrage
+- MP4-Uploads, Mediathek, Vorschau
+- Clips sortieren, Startzeit und Länge festlegen
+- Projekt-Timeline in SQLite speichern
+- MP4-Export via FFmpeg
 
-Die App benötigt Docker, FFmpeg und einen Reverse Proxy mit HTTPS.
+## Sicherheit und Grenzen
+
+**Nicht ohne weitere Härtung als öffentliche Multiuser-Plattform betreiben.** Aktuell ist es eine Single-Admin-Anwendung. Es fehlen unter anderem Rate-Limiting, Quoten/Kostenlimits, getrennte Nutzerkonten, Job-Persistenz über Neustarts und vollständige SSRF-Abwehr beim Abruf von Modell-Outputs. Der Download sollte vor einem öffentlichen Deployment zusätzlich gegen DNS-Rebinding abgesichert werden. Exporte laufen synchron und können den Server belasten. Das Interface ist ein einfacher Editor, kein vollständiges Schnittprogramm.
+
+**Nie `.env` oder echte API-Schlüssel committen.** Videogenerierung über Replicate verursacht Kosten.
+
+## Deployment
+
+Zieladresse: `https://video.benconnect.cyou`. Die DNS- und Reverse-Proxy-Konfiguration sowie der Replicate-Token müssen separat eingerichtet werden.
